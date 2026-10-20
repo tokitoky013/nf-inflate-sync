@@ -1,0 +1,27 @@
+name: Sync Inflate Ratings → Shopify Metafields
+
+on:
+  schedule:
+    # 05:00 heure Europe/Paris (UTC+1 en hiver, UTC+2 en été) = 04:00 UTC hiver / 03:00 UTC été
+    # Le cron GitHub Actions est en UTC. 05:00 Paris = 04:00 UTC (hiver).
+    - cron: '0 4 * * *'
+  workflow_dispatch:  # permet un lancement manuel depuis l'onglet Actions
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run sync script
+        env:
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          SHOPIFY_SHOP: ${{ secrets.SHOPIFY_SHOP }}
+          INFLATE_API_KEY: ${{ secrets.INFLATE_API_KEY }}
+        run: python3 sync_inflate_ratings.py
